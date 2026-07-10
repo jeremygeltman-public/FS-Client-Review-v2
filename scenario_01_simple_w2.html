@@ -170,7 +170,7 @@ body {
   margin-bottom: 20px;
 }
 /* ── OUTCOME HERO (top card) ── */
-.outcome-hero { margin-bottom: 20px; }
+.outcome-hero { margin-bottom: 0; }
 .outcome-headline {
   font-family: 'Tally', sans-serif;
   font-size: 34px;
@@ -182,6 +182,8 @@ body {
   margin: 4px 0 22px;
 }
 .outcome-card {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(155deg, #EAFBF2 0%, var(--green-light) 40%, #B8E8D4 100%);
   border: 1px solid var(--green-mid);
   border-radius: var(--radius);
@@ -192,6 +194,19 @@ body {
   align-items: center;
   text-align: center;
 }
+.outcome-confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;   /* match the 1920x1080 animation, scaled to card width */
+  height: auto;
+  pointer-events: none;
+  z-index: 3;
+}
+.outcome-card > .outcome-coin,
+.outcome-card > .outcome-caption,
+.outcome-card > .refund-amount { position: relative; z-index: 1; }
 .outcome-coin {
   width: 44px;
   height: 44px;
@@ -249,8 +264,8 @@ body {
 .stat-value.red { color: var(--red); }
 
 /* ── NARRATIVE ── */
-.narrative-card { padding: 22px 28px 22px; border-top: 3px solid var(--green); }
-.narrative-text { font-size: 15px; line-height: 1.78; color: var(--text); margin-bottom: 20px; }
+.narrative-card { padding: 22px 28px 22px; }
+.narrative-text { font-size: 18px; line-height: 1.78; color: var(--text); margin-bottom: 20px; }
 .changes-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
 .changes-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-600); white-space: nowrap; }
 .changes-line { flex: 1; height: 1px; background: var(--gray-200); }
@@ -283,7 +298,7 @@ body {
   position: relative;
   z-index: 1;
 }
-.bar-group.overlap  { margin-left: -36px; z-index: 2; }
+.bar-group.overlap  { margin-left: -36px; z-index: 4; }
 .bar-group.overlap2 { margin-left: -36px; z-index: 3; }
 
 .bar-wrap {
@@ -306,19 +321,36 @@ body {
   transition: height 0.95s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .bar-col.animated { height: 0 !important; }
-.bar-col span {
-  font-size: 15px;
-  font-weight: 700;
+.bar-inner span {
+  font-size: 18px;
+  font-weight: 800;
   color: white;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   white-space: nowrap;
   text-shadow: 0 1px 2px rgba(0,0,0,0.15);
   letter-spacing: -0.01em;
 }
-.bar-gray { background: linear-gradient(180deg, #CDD2DE 0%, #A4ABBE 100%); }
-.bar-gray span { color: var(--gray-800); text-shadow: none; }
+/* Amount + label stacked together, centered inside each bar */
+.bar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+/* Both label lines share identical styling; 2025 stays on its own line */
+.bar-inner .bar-label-sub,
+.bar-inner .bar-label-main { font-size: 11px; font-weight: 500; line-height: 1.2; }
+/* Tighten the gap between "Total income" and the year */
+.bar-inner .bar-label-main { margin-top: -5px; }
+/* On dark bars the label is light; on the white/gray bar it stays dark */
+.bar-dark-blue .bar-inner .bar-label-sub,
+.bar-dark-blue .bar-inner .bar-label-main,
+.bar-taxable-body .bar-inner .bar-label-sub,
+.bar-taxable-body .bar-inner .bar-label-main { color: rgba(255,255,255,0.9); }
+.bar-gray .bar-inner .bar-label-sub,
+.bar-gray .bar-inner .bar-label-main { color: var(--gray-600); }
+.bar-gray { background: #fff; border: 1px solid var(--gray-200); }
+.bar-gray span { color: var(--gray-400); text-shadow: none; }
 .bar-dark-blue { background: linear-gradient(180deg, #2D4F8A 0%, #132444 100%); }
 
 /* Stacked bar — single container clips both segments */
@@ -374,7 +406,7 @@ body {
 
 /* ── DATA CARD ── */
 .data-card { padding: 22px 28px 20px; }
-.data-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+.data-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; }
 .data-item + .data-item { border-left: 1px solid var(--gray-100); padding-left: 16px; }
 .data-item-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px; }
 .data-item-value { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
@@ -439,11 +471,12 @@ body {
   align-items: center;
   justify-content: space-between;
   min-height: 72px;
-  background: #E8F7F1;
-  border-radius: var(--radius-sm);
+  background: linear-gradient(155deg, #EAFBF2 0%, var(--green-light) 40%, #B8E8D4 100%);
+  border-radius: var(--radius);
   margin-top: 10px;
-  padding: 14px 16px 14px 16px;
-  border: 2px solid #0A8A56;
+  padding: 18px 24px;
+  border: 1px solid var(--green-mid);
+  box-shadow: 0 2px 6px rgba(15,169,106,0.10), 0 12px 32px rgba(15,169,106,0.16);
   gap: 16px;
 }
 .bd-total-row .bd-label { padding-left: 0; flex-shrink: 0; }
@@ -622,6 +655,8 @@ a.btn-back:focus {
 }
 
 /* Layout wrapper */
+/* Bottom row sits outside .page: give it equal space above and below */
+.btn-bundle-bottom { margin: 28px auto; }
 .btn-bundle {
   max-width: 1000px;
   width: 100%;
@@ -801,7 +836,7 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   background: #fff;
 }
 .expert-msg-quote {
-  font-size: 14px;
+  font-size: 20px;
   color: #1A1A1A;
   line-height: 1.6;
   margin-top: 16px;
@@ -960,7 +995,7 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   transition: background 0.18s ease;
 }
 .bar-group.ai-hint-host:hover {
-  background: rgba(238,245,255,0.7);
+  background: transparent;
 }
 .bar-group.ai-hint-host .ai-hint-chip {
   top: auto;
@@ -1203,7 +1238,7 @@ body { background: #F4F4EF; }
 /* ── Expert strip ── */
 .tt-expert-strip {
   max-width: 1000px;
-  margin: 28px auto 0;
+  margin: 0 auto;
   padding: 20px 24px;
   background: #EEF3FB;
   border-radius: 12px;
@@ -1383,6 +1418,24 @@ body.ai-closed .ai-reopen { display: flex; }
 .ai-msg.bot .ai-msg-bubble { background: var(--gray-50); color: var(--text); border-bottom-left-radius: 4px; }
 .ai-msg.user { justify-content: flex-end; }
 .ai-msg.user .ai-msg-bubble { background: #0077C5; color: #fff; border-bottom-right-radius: 4px; }
+/* Reference chip shown when the user clicks an "Ask AI" hint on a metric */
+.ai-ref-chip {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 90%;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0077C5;
+  background: #EAF4FB;
+  border: 1px solid #BEDDF3;
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+.ai-ref-chip .ai-ref-spark { font-size: 11px; }
+.ai-ref-chip .ai-ref-label { color: var(--gray-600); font-weight: 600; }
+.ai-ref-chip .ai-ref-value { color: var(--text); font-weight: 700; }
 .ai-suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
 .ai-suggestion {
   font-size: 12.5px;
@@ -1445,7 +1498,7 @@ body.ai-closed .ai-reopen { display: flex; }
 <!-- Top navigation -->
 <nav class="tt-nav">
   <div class="tt-nav-left">
-    <a class="tt-logo" href="#">
+    <a class="tt-logo" href="index.html" aria-label="TurboTax Full Service — back to home">
       <div class="tt-logo-stack">
       <svg width="168" height="28" viewBox="0 0 168 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 28C21.7317 28 28 21.7317 28 14C28 6.26827 21.7317 0 14 0C6.26827 0 0 6.26827 0 14C0 21.7317 6.26827 28 14 28Z" fill="#D52B1E"/>
@@ -1507,9 +1560,18 @@ body.ai-closed .ai-reopen { display: flex; }
 <div class="outcome-hero reveal">
   <h1 class="outcome-headline">Ka-ching! Your refund&rsquo;s looking good, Carla.</h1>
   <div class="card outcome-card">
+    <div class="outcome-confetti" aria-hidden="true"></div>
     <div class="outcome-coin">$</div>
     <div class="outcome-caption">You&rsquo;re getting a total refund of</div>
     <div class="refund-amount">$1,180</div>
+  </div>
+</div>
+
+<div class="btn-bundle">
+  <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
+  <div class="btn-bundle-right">
+    <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
+    <a href="#" class="btn-primary" onclick="return false;">Continue</a>
   </div>
 </div>
 
@@ -1534,27 +1596,19 @@ body.ai-closed .ai-reopen { display: flex; }
       </div>
     </div>
 
-<div class="btn-bundle">
-  <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
-  <div class="btn-bundle-right">
-    <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
-    <a href="#" class="btn-primary" onclick="return false;">Continue</a>
-  </div>
-</div>
-
 <!-- 2. NARRATIVE -->
 <div class="card narrative-card reveal">
-  <div class="section-eyebrow">Your situation</div>
-  <p class="narrative-text">Your tax picture stayed steady this year. Your income rose from $76,600 to $83,000, nudging a bit more into a higher bracket. Your withholding didn't quite keep pace with the raise, which is why the refund is $270 smaller. Nothing here signals a problem.</p>
+  <div class="section-eyebrow">Summary</div>
+  <p class="narrative-text">Great year, Carla! Your income climbed from $76,600 to $83,000 &mdash; a well-earned $6,400 raise &mdash; and you&rsquo;re still getting a healthy $1,180 refund. A little more of your pay landed in the 22% bracket and withholding didn&rsquo;t quite keep pace, so this year&rsquo;s refund is $270 lighter than last year&rsquo;s. That&rsquo;s a small, easy-to-fix trade-off for earning more, and a quick withholding tweak can bump next year&rsquo;s refund right back up. Everything on your return looks clean and on track.</p>
   <div class="changes-divider">
     <span class="changes-label">What changed from 2024</span>
     <div class="changes-line"></div>
   </div>
   <div class="bullets">
     <div class="bullet ai-hint-host">
-      <div class="bullet-dot red-dot"></div>
+      <div class="bullet-dot green-dot"></div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <span>Income up $6,400 &mdash; added <strong class="neg">&minus;$1,181 in tax</strong>&nbsp; (taxable income rose $62K &rarr; $68K, top bracket 22%)</span>
+      <span>Income up $6,400 &mdash; a well-earned raise ($76,600 &rarr; $83,000) that grows your long-term earning power</span>
     </div>
     <div class="bullet ai-hint-host">
       <div class="bullet-dot green-dot"></div>
@@ -1566,58 +1620,23 @@ body.ai-closed .ai-reopen { display: flex; }
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
       <span>Standard deduction increased &mdash; added <strong class="pos">+$88</strong>&nbsp; to refund&nbsp; ($14,600 &rarr; $15,000)</span>
     </div>
-  </div>
-  <div class="net-change-line">
-    Net change matches filed return exactly: <strong>&minus;$270 refund decrease</strong>
+    <div class="bullet ai-hint-host">
+      <div class="bullet-dot green-dot"></div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <span>A bit more income taxed at 22% &mdash; the only trade-off of the raise (about <strong class="neg">&minus;$1,181</strong>), and easily offset with a small withholding tweak</span>
+    </div>
+    <div class="bullet ai-hint-host">
+      <div class="bullet-dot green-dot"></div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <span>Bottom line &mdash; a bigger paycheck and a solid <strong class="pos">$1,180 refund</strong>, just <strong class="pos">$270</strong> shy of last year despite earning $6,400 more</span>
+    </div>
   </div>
 </div>
 
 <!-- 3. DATA CARD -->
 <div class="card data-card reveal">
   <div class="section-eyebrow">2025 at a glance</div>
-  <div class="kpi-row">
-    <div class="kpi ai-hint-host">
-      <div class="kpi-label">Total income</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="kpi-value">$83,000</div>
-      <div class="kpi-sub">was $76,600 in 2024</div>
-    </div>
-    <div class="kpi ai-hint-host">
-      <div class="kpi-label">Taxable income</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="kpi-value">$68,000</div>
-      <div class="kpi-sub">after $15,000 deduction</div>
-    </div>
-  </div>
-  <div class="stats-strip">
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Refund change</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value red">&minus;$270</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Effective rate</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">11.9%</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Tax liability</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">$9,874</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Top bracket</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">22%</div>
-    </div>
-  </div>
   <div class="data-grid">
-    <div class="data-item ai-hint-host">
-      <div class="data-item-label">Year</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="data-item-value">2025</div>
-      <div class="data-item-sub">was 2024</div>
-    </div>
     <div class="data-item ai-hint-host">
       <div class="data-item-label">Filing status</div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
@@ -1637,10 +1656,28 @@ body.ai-closed .ai-reopen { display: flex; }
       <div class="data-item-sub">same as 2024</div>
     </div>
     <div class="data-item ai-hint-host">
+      <div class="data-item-label">Deductions</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">$15,000</div>
+      <div class="data-item-sub">standard deduction</div>
+    </div>
+    <div class="data-item ai-hint-host">
       <div class="data-item-label">Withholding</div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
       <div class="data-item-value">$11,054</div>
       <div class="data-item-sub changed">+$911 from 2024</div>
+    </div>
+    <div class="data-item ai-hint-host">
+      <div class="data-item-label">Effective rate</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">11.9%</div>
+      <div class="data-item-sub">of taxable income</div>
+    </div>
+    <div class="data-item ai-hint-host">
+      <div class="data-item-label">Tax liability</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">$9,874</div>
+      <div class="data-item-sub">federal 2025</div>
     </div>
   </div>
   <div class="income-subsection-label">Income overview</div>
@@ -1650,28 +1687,28 @@ body.ai-closed .ai-reopen { display: flex; }
     <div class="bar-group ai-hint-host">
       <div class="bar-wrap">
         <div class="bar-col bar-gray animated" data-target="193" style="height:0">
-          <span>$76,600</span>
+          <div class="bar-inner">
+            <span>$76,600</span>
+            <div class="bar-label-sub">Total income</div>
+            <div class="bar-label-main">2024</div>
+          </div>
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Gross income</div>
-        <div class="year-main">2024</div>
-      </div>
     </div>
 
     <!-- Bar 2: Gross 2025 -->
     <div class="bar-group overlap ai-hint-host">
       <div class="bar-wrap">
         <div class="bar-col bar-dark-blue animated" data-target="210" style="height:0">
-          <span>$83,000</span>
+          <div class="bar-inner">
+            <span style="font-size:27px;">$83,000</span>
+            <div class="bar-label-sub">Total income</div>
+            <div class="bar-label-main">2025</div>
+          </div>
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Gross income</div>
-        <div class="year-main">2025</div>
-      </div>
     </div>
 
     <!-- Bar 3: Taxable 2025 stacked -->
@@ -1681,7 +1718,11 @@ body.ai-closed .ai-reopen { display: flex; }
         <div class="stacked-bar-outer animated" id="stackedBar" data-target="210" style="height:0">
           <div class="bar-deduction-cap"></div>
           <div class="bar-taxable-body">
-            <span>$68,000</span>
+            <div class="bar-inner">
+              <span style="font-size:20px;">$68,000</span>
+              <div class="bar-label-sub">Taxable income</div>
+              <div class="bar-label-main">2025</div>
+            </div>
           </div>
         </div>
         <!-- Callout sits outside the clipped container -->
@@ -1691,10 +1732,6 @@ body.ai-closed .ai-reopen { display: flex; }
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Taxable income</div>
-        <div class="year-main">2025</div>
-      </div>
     </div>
 
   </div>
@@ -1840,7 +1877,7 @@ body.ai-closed .ai-reopen { display: flex; }
 
 </div>
 
-<div class="btn-bundle">
+<div class="btn-bundle btn-bundle-bottom">
   <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
   <div class="btn-bundle-right">
     <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
@@ -1883,8 +1920,11 @@ function animateBreakdownBars() {
   allBars.forEach((bar, i) => {
     const targetPx = parseInt(bar.dataset.px);
     const half = bar.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const finalPx = Math.max(Math.round(targetPx / maxPx * halfW), 6);
+    // Each bar occupies one half (50%) of the bar-area from the center axis.
+    // Reserve a margin so the largest bar fits fully and never overflows the
+    // card, then scale every bar proportionally to that same span.
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const finalPx = Math.max(Math.round(targetPx / maxPx * trackW), 6);
     const isPos = bar.classList.contains('pos');
     setTimeout(() => {
       bar.style.width = finalPx + 'px';
@@ -1931,8 +1971,8 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const _rmMax = Math.max(..._rmBars.map(b => parseInt(b.dataset.px)));
   _rmBars.forEach(b => {
     const half = b.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * halfW), 6);
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * trackW), 6);
     b.style.width = fp + 'px';
     const lbl = b.querySelector('.bd-bar-label');
     const isPos = b.classList.contains('pos');
@@ -2094,8 +2134,11 @@ function animateBreakdownBars() {
   allBars.forEach((bar, i) => {
     const targetPx = parseInt(bar.dataset.px);
     const half = bar.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const finalPx = Math.max(Math.round(targetPx / maxPx * halfW), 6);
+    // Each bar occupies one half (50%) of the bar-area from the center axis.
+    // Reserve a margin so the largest bar fits fully and never overflows the
+    // card, then scale every bar proportionally to that same span.
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const finalPx = Math.max(Math.round(targetPx / maxPx * trackW), 6);
     const isPos = bar.classList.contains('pos');
     setTimeout(() => {
       bar.style.width = finalPx + 'px';
@@ -2142,8 +2185,8 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const _rmMax = Math.max(..._rmBars.map(b => parseInt(b.dataset.px)));
   _rmBars.forEach(b => {
     const half = b.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * halfW), 6);
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * trackW), 6);
     b.style.width = fp + 'px';
     const lbl = b.querySelector('.bd-bar-label');
     const isPos = b.classList.contains('pos');
@@ -2275,8 +2318,120 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   } else {
     console.warn('[ai-panel] .ai-resize-handle not found');
   }
+
+  // ── "Ask AI" on a metric → open panel, add reference + explanation ──
+  const body = panel.querySelector('.ai-panel-body');
+  const input = panel.querySelector('.ai-panel-input textarea');
+  const suggestions = panel.querySelector('.ai-suggestions');
+
+  // Read a { label, value } from whatever host wraps the clicked chip.
+  const readMetric = host => {
+    const pick = sels => { for (const s of sels) { const el = host.querySelector(s); if (el) return el.textContent.trim(); } return ''; };
+    let label = pick(['.data-item-label', '.kpi-label', '.stat-label', '.bd-title', '.year-sub']);
+    let value = pick(['.data-item-value', '.kpi-value', '.stat-value', '.bd-bar-label', '.bar-col span']);
+    // Bar groups: label is "<year-sub> <year-main>", value is the bar amount
+    const yearMain = host.querySelector('.year-main');
+    if (yearMain && label) label = label + ' ' + yearMain.textContent.trim();
+    return { label: label || 'this figure', value };
+  };
+
+  // Metric-specific explanations (keyed by lowercased label); fallback is generic.
+  const EXPLANATIONS = {
+    'total income': 'Your total income of $83,000 is everything you earned in 2025 before any deductions — mostly W-2 wages. It rose from $76,600 in 2024, a $6,400 raise.',
+    'taxable income': 'Taxable income is $68,000 — your $83,000 total income minus the $15,000 standard deduction. This is the amount your tax brackets actually apply to.',
+    'effective rate': 'Your effective rate is 11.9% — total federal tax ($9,874) divided by taxable income ($68,000). It’s lower than your 22% top bracket because only the last slice of income is taxed at 22%.',
+    'tax liability': 'Your federal tax liability is $9,874 — the total tax owed across the 10%, 12%, and 22% brackets on your $68,000 taxable income, before withholding is applied.',
+    'top bracket': 'Your top bracket is 22% — the rate on your last dollar of taxable income. Only income above $48,475 is taxed at this rate, not your whole income.',
+    'refund change': 'Your refund is $270 smaller than last year. Your raise pushed a bit more income into the 22% bracket, and withholding didn’t rise quite as fast as your pay.',
+    'deductions': 'You’re taking the $15,000 standard deduction. Your expert checked itemizing and the standard deduction won by about $1,800, so it’s the better choice for you.',
+    'withholding': 'Your employer withheld $11,054 in federal tax during 2025 — $911 more than last year. Since this exceeds your $9,874 liability, the difference comes back as your refund.',
+    'filing status': 'You’re filing as Single, same as 2024. This sets your standard deduction ($15,000) and bracket thresholds.',
+    'dependents': 'You claimed 0 dependents, same as 2024. Dependents can unlock credits like the Child Tax Credit — none apply this year.',
+    'tax credits': 'You have no tax credits this year. Credits reduce tax dollar-for-dollar; none of the common ones (child, education, energy) apply to your situation.',
+    'federal income tax': 'This is the $9,875 of federal income tax across your brackets: 10% on the first $11,925, 12% up to $48,475, and 22% on the rest up to $68,000.',
+    'standard deduction benefit': 'The standard deduction shields $15,000 of income from tax. At your 22% marginal rate that’s worth about $3,300 in tax savings.',
+    'total income 2024': 'In 2024 your total income was $76,600. It grew to $83,000 in 2025 — a $6,400 increase.',
+    'total income 2025': 'Your 2025 total income is $83,000, up $6,400 from 2024’s $76,600.',
+    'taxable income 2025': 'Your 2025 taxable income is $68,000 — total income minus the $15,000 standard deduction.'
+  };
+
+  const addMsg = (cls, html) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ' + cls;
+    const bub = document.createElement('div');
+    bub.className = 'ai-msg-bubble';
+    bub.innerHTML = html;
+    wrap.appendChild(bub);
+    body.appendChild(wrap);
+    return wrap;
+  };
+
+  const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+  const askAboutMetric = host => {
+    const { label, value } = readMetric(host);
+    // Open the panel if closed
+    document.body.classList.remove('ai-closed');
+    // Hide the starter suggestions once a real conversation begins
+    if (suggestions) suggestions.style.display = 'none';
+
+    // Reference chip (what the user "clicked")
+    const ref = document.createElement('div');
+    ref.className = 'ai-ref-chip';
+    ref.innerHTML = '<span class="ai-ref-spark">✦</span>' +
+      '<span class="ai-ref-label">' + escapeHtml(label) + '</span>' +
+      (value ? '<span class="ai-ref-value">' + escapeHtml(value) + '</span>' : '');
+    body.appendChild(ref);
+
+    // Explanation
+    const key = label.toLowerCase();
+    const explanation = EXPLANATIONS[key] ||
+      ('Here’s a look at ' + escapeHtml(label) + (value ? ' (' + escapeHtml(value) + ')' : '') +
+       '. It’s one of the figures on your 2025 return — ask me anything about how it was calculated or how to change it.');
+    addMsg('bot', explanation);
+
+    // Seed the input so they can keep the thread going
+    if (input) {
+      input.value = 'Tell me more about ' + label + (value ? ' (' + value + ')' : '') + '…';
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    body.scrollTop = body.scrollHeight;
+  };
+
+  document.querySelectorAll('.ai-hint-chip').forEach(chip => {
+    chip.style.cursor = 'pointer';
+    chip.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const host = chip.closest('.ai-hint-host') || chip.parentElement;
+      askAboutMetric(host);
+    });
+  });
 })();
 
+</script>
+
+<!-- One-time Lottie confetti inside the green refund card -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<script>
+(function() {
+  const container = document.querySelector('.outcome-confetti');
+  if (!container || !window.lottie) return;
+  const anim = window.lottie.loadAnimation({
+    container: container,
+    renderer: 'svg',
+    loop: false,        // play once
+    autoplay: true,
+    path: 'confetti.json',
+    rendererSettings: {
+      // Scale to the container (full card width) preserving aspect ratio
+      preserveAspectRatio: 'xMidYMid meet'
+    }
+  });
+  // Belt-and-suspenders: never replay once complete.
+  anim.addEventListener('complete', () => anim.pause());
+})();
 </script>
 </body>
 </html>
