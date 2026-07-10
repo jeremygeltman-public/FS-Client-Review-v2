@@ -27,8 +27,8 @@
   --green-light: #E6F7F1;
   --green-mid: #B8E8D4;
   --green-dark: #0A8A56;
-  --red: #D03E3E;
-  --red-light: #FAEAEA;
+  --red: #5E6578;
+  --red-light: #ECEEF3;
   --blue-dark: #1A3057;
   --blue-dark2: #243F70;
   --blue-mid: #2176D9;
@@ -46,6 +46,7 @@
   --radius: 16px;
   --radius-sm: 8px;
   --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.07);
+  --ai-w: 360px;
 }
 
 body {
@@ -164,9 +165,75 @@ body {
 
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0;
   margin-bottom: 20px;
+}
+/* ── OUTCOME HERO (top card) ── */
+.outcome-hero { margin-bottom: 0; }
+.outcome-headline {
+  font-family: 'Tally', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-align: center;
+  margin: 4px 0 22px;
+}
+.outcome-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(155deg, #EAFBF2 0%, var(--green-light) 40%, #B8E8D4 100%);
+  border: 1px solid var(--green-mid);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(15,169,106,0.10), 0 12px 32px rgba(15,169,106,0.16);
+  padding: 34px 28px 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.outcome-confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;   /* match the 1920x1080 animation, scaled to card width */
+  height: auto;
+  pointer-events: none;
+  z-index: 3;
+}
+.outcome-card > .outcome-coin,
+.outcome-card > .outcome-caption,
+.outcome-card > .refund-amount { position: relative; z-index: 1; }
+.outcome-coin {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-family: 'Tally', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.outcome-caption {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.refund-amount {
+  font-family: 'Tally', sans-serif;
+  font-size: 62px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--green-dark);
 }
 .kpi { padding: 0 6px; }
 .kpi:first-child { padding-left: 0; }
@@ -197,8 +264,8 @@ body {
 .stat-value.red { color: var(--red); }
 
 /* ── NARRATIVE ── */
-.narrative-card { padding: 22px 28px 22px; border-top: 3px solid var(--green); }
-.narrative-text { font-size: 15px; line-height: 1.78; color: var(--text); margin-bottom: 20px; }
+.narrative-card { padding: 22px 28px 22px; }
+.narrative-text { font-size: 18px; line-height: 1.78; color: var(--text); margin-bottom: 20px; }
 .changes-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
 .changes-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-600); white-space: nowrap; }
 .changes-line { flex: 1; height: 1px; background: var(--gray-200); }
@@ -231,7 +298,7 @@ body {
   position: relative;
   z-index: 1;
 }
-.bar-group.overlap  { margin-left: -36px; z-index: 2; }
+.bar-group.overlap  { margin-left: -36px; z-index: 4; }
 .bar-group.overlap2 { margin-left: -36px; z-index: 3; }
 
 .bar-wrap {
@@ -254,19 +321,36 @@ body {
   transition: height 0.95s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .bar-col.animated { height: 0 !important; }
-.bar-col span {
-  font-size: 15px;
-  font-weight: 700;
+.bar-inner span {
+  font-size: 18px;
+  font-weight: 800;
   color: white;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   white-space: nowrap;
   text-shadow: 0 1px 2px rgba(0,0,0,0.15);
   letter-spacing: -0.01em;
 }
-.bar-gray { background: linear-gradient(180deg, #CDD2DE 0%, #A4ABBE 100%); }
-.bar-gray span { color: var(--gray-800); text-shadow: none; }
+/* Amount + label stacked together, centered inside each bar */
+.bar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+/* Both label lines share identical styling; 2025 stays on its own line */
+.bar-inner .bar-label-sub,
+.bar-inner .bar-label-main { font-size: 11px; font-weight: 500; line-height: 1.2; }
+/* Tighten the gap between "Total income" and the year */
+.bar-inner .bar-label-main { margin-top: -5px; }
+/* On dark bars the label is light; on the white/gray bar it stays dark */
+.bar-dark-blue .bar-inner .bar-label-sub,
+.bar-dark-blue .bar-inner .bar-label-main,
+.bar-taxable-body .bar-inner .bar-label-sub,
+.bar-taxable-body .bar-inner .bar-label-main { color: rgba(255,255,255,0.9); }
+.bar-gray .bar-inner .bar-label-sub,
+.bar-gray .bar-inner .bar-label-main { color: var(--gray-600); }
+.bar-gray { background: #fff; border: 1px solid var(--gray-200); }
+.bar-gray span { color: var(--gray-400); text-shadow: none; }
 .bar-dark-blue { background: linear-gradient(180deg, #2D4F8A 0%, #132444 100%); }
 
 /* Stacked bar — single container clips both segments */
@@ -322,7 +406,7 @@ body {
 
 /* ── DATA CARD ── */
 .data-card { padding: 22px 28px 20px; }
-.data-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+.data-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; }
 .data-item + .data-item { border-left: 1px solid var(--gray-100); padding-left: 16px; }
 .data-item-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 4px; }
 .data-item-value { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
@@ -376,7 +460,7 @@ body {
   position: relative;
 }
 .bd-bar.pos { background: linear-gradient(90deg, #077A4A, #13CC81); border-radius: 0 6px 6px 0; justify-content: flex-start; }
-.bd-bar.neg { background: linear-gradient(270deg, #A02828, #E04545); border-radius: 6px 0 0 6px; justify-content: flex-end; }
+.bd-bar.neg { background: linear-gradient(270deg, #767E90, #A4ABBE); border-radius: 6px 0 0 6px; justify-content: flex-end; }
 .bd-bar-label { font-size: 12px; font-weight: 700; white-space: nowrap; position: absolute; }
 .bd-bar-label.inside { color: #fff !important; padding: 0 10px; position: absolute; }
 .bd-bar-label.outside-right { color: var(--green); left: calc(100% + 8px); }
@@ -387,11 +471,12 @@ body {
   align-items: center;
   justify-content: space-between;
   min-height: 72px;
-  background: #E8F7F1;
-  border-radius: var(--radius-sm);
+  background: linear-gradient(155deg, #EAFBF2 0%, var(--green-light) 40%, #B8E8D4 100%);
+  border-radius: var(--radius);
   margin-top: 10px;
-  padding: 14px 16px 14px 16px;
-  border: 2px solid #0A8A56;
+  padding: 18px 24px;
+  border: 1px solid var(--green-mid);
+  box-shadow: 0 2px 6px rgba(15,169,106,0.10), 0 12px 32px rgba(15,169,106,0.16);
   gap: 16px;
 }
 .bd-total-row .bd-label { padding-left: 0; flex-shrink: 0; }
@@ -570,6 +655,8 @@ a.btn-back:focus {
 }
 
 /* Layout wrapper */
+/* Bottom row sits outside .page: give it equal space above and below */
+.btn-bundle-bottom { margin: 28px auto; }
 .btn-bundle {
   max-width: 1000px;
   width: 100%;
@@ -692,6 +779,7 @@ a.btn-back::before { display: none; }
 }
 .card.collapsed .card-fade { opacity: 1; }
 .card-toggle {
+  display: none !important;
   position: absolute;
   top: 20px;
   right: 20px;
@@ -722,8 +810,7 @@ a.btn-back::before { display: none; }
 
 /* ── Expert message card ── */
 .expert-msg-card {
-  max-width: 1000px;
-  margin: 0 auto 16px;
+  width: 100%;
 }
 .expert-msg-bubble-header {
   display: flex;
@@ -745,11 +832,11 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid rgba(0,0,0,0.04);
-  padding: 20px 24px 16px;
+  padding: 22px 28px 20px;
   background: #fff;
 }
 .expert-msg-quote {
-  font-size: 14px;
+  font-size: 20px;
   color: #1A1A1A;
   line-height: 1.6;
   margin-top: 16px;
@@ -908,7 +995,7 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   transition: background 0.18s ease;
 }
 .bar-group.ai-hint-host:hover {
-  background: rgba(238,245,255,0.7);
+  background: transparent;
 }
 .bar-group.ai-hint-host .ai-hint-chip {
   top: auto;
@@ -1151,7 +1238,7 @@ body { background: #F4F4EF; }
 /* ── Expert strip ── */
 .tt-expert-strip {
   max-width: 1000px;
-  margin: 28px auto 0;
+  margin: 0 auto;
   padding: 20px 24px;
   background: #EEF3FB;
   border-radius: 12px;
@@ -1197,11 +1284,211 @@ body { background: #F4F4EF; }
 
 
 
+/* ── AI chat panel ── */
+.tt-main { margin-right: var(--ai-w); transition: margin-right 0.28s cubic-bezier(0.22,1,0.36,1); }
+body.ai-closed .tt-main { margin-right: 0; }
+.ai-panel {
+  position: fixed;
+  top: 58px;
+  right: 0;
+  bottom: 0;
+  width: var(--ai-w);
+  background: #fff;
+  border-left: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+body.ai-closed .ai-panel { transform: translateX(100%); }
+.ai-panel.resizing, body.ai-closed .ai-panel.resizing { transition: none; }
+/* Drag handle on the left edge */
+.ai-resize-handle {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 11px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 60;
+  pointer-events: auto;
+  touch-action: none;
+}
+/* Resting: no line of its own — the panel's 1px border-left is the divider.
+   On hover/drag, a 1px blue line highlights the grab edge. */
+.ai-resize-handle::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 5px;
+  width: 1px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.ai-resize-handle:hover::before,
+.ai-panel.resizing .ai-resize-handle::before { background: #0077C5; }
+/* Grip pill: hidden at rest, appears only on hover so the resting divider stays 1px */
+.ai-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 4px;
+  height: 34px;
+  transform: translateY(-50%);
+  border-radius: 3px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.ai-resize-handle:hover::after,
+.ai-panel.resizing .ai-resize-handle::after { background: #0077C5; }
+/* Reopen button (shown when closed) */
+.ai-reopen {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  top: auto;
+  z-index: 51;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px 14px 18px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #0077C5, #00A3E0);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,119,197,0.38);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.ai-reopen:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,119,197,0.45); }
+.ai-reopen span { font-size: 17px; }
+body.ai-closed .ai-reopen { display: flex; }
+.ai-panel-close {
+  margin-left: auto;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ai-panel-close:hover { background: var(--gray-200); }
+.ai-panel-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ai-panel-header .ai-spark {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0077C5, #00A3E0);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.ai-panel-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.ai-panel-sub { font-size: 11px; color: var(--gray-400); }
+.ai-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ai-msg { display: flex; max-width: 100%; }
+.ai-msg-bubble {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 11px 14px;
+  border-radius: 14px;
+  max-width: 85%;
+}
+.ai-msg.bot { justify-content: flex-start; }
+.ai-msg.bot .ai-msg-bubble { background: var(--gray-50); color: var(--text); border-bottom-left-radius: 4px; }
+.ai-msg.user { justify-content: flex-end; }
+.ai-msg.user .ai-msg-bubble { background: #0077C5; color: #fff; border-bottom-right-radius: 4px; }
+/* Reference chip shown when the user clicks an "Ask AI" hint on a metric */
+.ai-ref-chip {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 90%;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0077C5;
+  background: #EAF4FB;
+  border: 1px solid #BEDDF3;
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+.ai-ref-chip .ai-ref-spark { font-size: 11px; }
+.ai-ref-chip .ai-ref-label { color: var(--gray-600); font-weight: 600; }
+.ai-ref-chip .ai-ref-value { color: var(--text); font-weight: 700; }
+.ai-suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.ai-suggestion {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0077C5;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 8px 14px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ai-suggestion:hover { background: #F0F7FC; border-color: #0077C5; }
+.ai-panel-input {
+  border-top: 1px solid var(--gray-100);
+  padding: 14px 16px 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.ai-panel-input textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.4;
+  max-height: 96px;
+  outline: none;
+  color: var(--text);
+}
+.ai-panel-input textarea:focus { border-color: #0077C5; }
+.ai-panel-send {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #0077C5;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-panel-send:hover { background: #005E9E; }
+
 /* ── Mobile ── */
 @media (max-width: 640px) {
   .tt-sidebar { display: none; }
-  .tt-main { margin-left: 0; padding: 20px 16px 56px; }
+  .tt-main { margin-left: 0; margin-right: 0; padding: 20px 16px 56px; }
   .page-title-row, .page { max-width: 100%; }
+  .ai-panel { display: none; }
 }
 
 </style>
@@ -1211,7 +1498,7 @@ body { background: #F4F4EF; }
 <!-- Top navigation -->
 <nav class="tt-nav">
   <div class="tt-nav-left">
-    <a class="tt-logo" href="#">
+    <a class="tt-logo" href="index.html" aria-label="TurboTax Full Service — back to home">
       <div class="tt-logo-stack">
       <svg width="168" height="28" viewBox="0 0 168 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 28C21.7317 28 28 21.7317 28 14C28 6.26827 21.7317 0 14 0C6.26827 0 0 6.26827 0 14C0 21.7317 6.26827 28 14 28Z" fill="#D52B1E"/>
@@ -1267,14 +1554,31 @@ body { background: #F4F4EF; }
   <!-- Main scrollable area -->
   <main class="tt-main">
 
-    <div class="page-title-row">
-  <div class="page-title">2025 Tax Summary</div>
-  <div class="page-title-sub">Full Service Tax Preparation &middot; Scenario 02: New Dependent / Child Tax Credit</div>
+    <div class="page">
+
+<!-- 0. OUTCOME HEADLINE + CARD -->
+<div class="outcome-hero reveal">
+  <h1 class="outcome-headline">Ka-ching! Your refund&rsquo;s looking good, Alex.</h1>
+  <div class="card outcome-card">
+    <div class="outcome-confetti" aria-hidden="true"></div>
+    <div class="outcome-coin">$</div>
+    <div class="outcome-caption">You&rsquo;re getting a total refund of</div>
+    <div class="refund-amount">$5,100</div>
+  </div>
+</div>
+
+<div class="btn-bundle">
+  <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
+  <div class="btn-bundle-right">
+    <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
+    <a href="#" class="btn-primary" onclick="return false;">Continue</a>
+  </div>
 </div>
 
     <!-- Expert message card -->
     <div class="expert-msg-card">
       <div class="expert-msg-bubble">
+        <div class="section-eyebrow">A note from your expert</div>
         <div class="expert-msg-bio">
           <div class="expert-msg-avatar">
             <img src="data:image/png;base64,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" alt="Ben P.">
@@ -1292,85 +1596,19 @@ body { background: #F4F4EF; }
       </div>
     </div>
 
-    <div class="page">
-
-<!-- 1. HEADER -->
-<div class="card header-card reveal">
-  <div class="header-top">
-    <div>
-      <div class="header-eyebrow">Summary</div>
-      <div class="header-service">2025 TurboTax Full Service Tax Preparation &middot; Scenario 01: Simple W-2</div>
-    </div>
-    <div class="tax-year-badge">
-      <span class="badge-label">Tax year</span>
-      <span class="badge-year">2025</span>
-    </div>
-  </div>
-  <div class="kpi-row">
-    <div class="kpi ai-hint-host">
-      <div class="kpi-label">Total income</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="kpi-value">$83,000</div>
-      <div class="kpi-sub">was $76,600 in 2024</div>
-    </div>
-    <div class="kpi ai-hint-host">
-      <div class="kpi-label">Taxable income</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="kpi-value">$68,000</div>
-      <div class="kpi-sub">after $15,000 deduction</div>
-    </div>
-    <div class="kpi ai-hint-host" style="background:#E8F7F1; border:2px solid #0A8A56; border-radius:12px; padding:12px 16px; margin-left:4px;">
-      <div class="kpi-label" style="color:#0A8A56;">2025 outcome</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="kpi-value" style="color:#0A8A56;">+$1,180</div>
-      <div class="kpi-sub" style="color:#0A8A56;">refund</div>
-    </div>
-  </div>
-  <div class="stats-strip">
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Refund change</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value red">&minus;$270</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Effective rate</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">11.9%</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Tax liability</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">$9,874</div>
-    </div>
-    <div class="stat ai-hint-host">
-      <div class="stat-label">Top bracket</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="stat-value">22%</div>
-    </div>
-  </div>
-</div>
-
-<div class="btn-bundle">
-  <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
-  <div class="btn-bundle-right">
-    <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
-    <a href="#" class="btn-primary" onclick="return false;">Continue</a>
-  </div>
-</div>
-
 <!-- 2. NARRATIVE -->
 <div class="card narrative-card reveal">
-  <div class="section-eyebrow">Your situation</div>
-  <p class="narrative-text">Your tax picture stayed steady this year. Your income rose from $76,600 to $83,000, nudging a bit more into a higher bracket. Your withholding didn't quite keep pace with the raise, which is why the refund is $270 smaller. Nothing here signals a problem.</p>
+  <div class="section-eyebrow">Summary</div>
+  <p class="narrative-text">Great news, Alex! Adding your new dependent unlocked the Child Tax Credit, boosting your refund to a healthy $5,100 &mdash; up significantly from last year. Everything on your return looks clean and on track.</p>
   <div class="changes-divider">
     <span class="changes-label">What changed from 2024</span>
     <div class="changes-line"></div>
   </div>
   <div class="bullets">
     <div class="bullet ai-hint-host">
-      <div class="bullet-dot red-dot"></div>
+      <div class="bullet-dot green-dot"></div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <span>Income up $6,400 &mdash; added <strong class="neg">&minus;$1,181 in tax</strong>&nbsp; (taxable income rose $62K &rarr; $68K, top bracket 22%)</span>
+      <span>Income up $6,400 &mdash; a well-earned raise ($76,600 &rarr; $83,000) that grows your long-term earning power</span>
     </div>
     <div class="bullet ai-hint-host">
       <div class="bullet-dot green-dot"></div>
@@ -1382,73 +1620,23 @@ body { background: #F4F4EF; }
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
       <span>Standard deduction increased &mdash; added <strong class="pos">+$88</strong>&nbsp; to refund&nbsp; ($14,600 &rarr; $15,000)</span>
     </div>
-  </div>
-  <div class="net-change-line">
-    Net change matches filed return exactly: <strong>&minus;$270 refund decrease</strong>
-  </div>
-</div>
-
-<!-- 4. REFUND DISTRIBUTION -->
-<div class="card dist-card reveal">
-  <div class="section-eyebrow">How your refund compares</div>
-  <div class="dist-subtitle">Single W-2 filers with similar income &middot; 2025</div>
-
-  <div class="dist-chart-wrap">
-    <svg class="dist-svg" viewBox="0 0 800 230" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMid meet">
-      <defs>
-        <linearGradient id="distGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stop-color="#DDE0E8" stop-opacity="0.4"/>
-          <stop offset="30%"  stop-color="#DDE0E8" stop-opacity="0.6"/>
-          <stop offset="56%"  stop-color="#C5E4D8" stop-opacity="0.75"/>
-          <stop offset="100%" stop-color="#E6F7F1" stop-opacity="0.5"/>
-        </linearGradient>
-        <clipPath id="curveClip"><path d="M -20,207.93 C 33.3,207.7 46.7,207.6 60,207.35 C 73.3,207.1 86.7,206.9 100,206.24 C 113.3,205.6 126.7,205.0 140,203.68 C 153.3,202.4 166.7,200.9 180,198.33 C 193.3,195.8 206.7,192.8 220,188.34 C 233.3,183.9 246.7,178.5 260,171.61 C 273.3,164.7 286.7,156.3 300,146.75 C 313.3,137.2 326.7,125.8 340,114.22 C 353.3,102.7 366.7,89.3 380,77.38 C 393.3,65.4 406.7,52.5 420,42.5 C 433.3,32.5 446.7,23.0 460,17.25 C 473.3,11.5 486.7,8.0 500,8.0 C 513.3,8.0 526.7,11.5 540,17.25 C 553.3,23.0 566.7,32.5 580,42.5 C 593.3,52.5 606.7,65.4 620,77.38 C 633.3,89.3 646.7,102.7 660,114.22 C 673.3,125.8 686.7,137.2 700,146.75 C 713.3,156.3 726.7,164.7 740,171.61 C 753.3,178.5 766.7,183.9 780,188.34 L 820,208 L -20,208 Z"/></clipPath>
-      </defs>
-      <rect x="-20" y="0" width="840" height="210" fill="url(#distGrad)" clip-path="url(#curveClip)"/>
-      <line x1="0" y1="208" x2="800" y2="208" stroke="#DDE0E8" stroke-width="1"/>
-      <line x1="280" y1="15" x2="280" y2="208" stroke="#9BA3B5" stroke-width="2"/>
-      <text x="280" y="223" text-anchor="middle" font-size="12" fill="#5E6578" font-weight="700" font-family="Tally,sans-serif">$0</text>
-      <path d="M -20,207.93 C 33.3,207.7 46.7,207.6 60,207.35 C 73.3,207.1 86.7,206.9 100,206.24 C 113.3,205.6 126.7,205.0 140,203.68 C 153.3,202.4 166.7,200.9 180,198.33 C 193.3,195.8 206.7,192.8 220,188.34 C 233.3,183.9 246.7,178.5 260,171.61 C 273.3,164.7 286.7,156.3 300,146.75 C 313.3,137.2 326.7,125.8 340,114.22 C 353.3,102.7 366.7,89.3 380,77.38 C 393.3,65.4 406.7,52.5 420,42.5 C 433.3,32.5 446.7,23.0 460,17.25 C 473.3,11.5 486.7,8.0 500,8.0 C 513.3,8.0 526.7,11.5 540,17.25 C 553.3,23.0 566.7,32.5 580,42.5 C 593.3,52.5 606.7,65.4 620,77.38 C 633.3,89.3 646.7,102.7 660,114.22 C 673.3,125.8 686.7,137.2 700,146.75 C 713.3,156.3 726.7,164.7 740,171.61 C 753.3,178.5 766.7,183.9 780,188.34" fill="none" stroke="#9BA3B5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      <line x1="500" y1="6" x2="500" y2="208" stroke="#5E6578" stroke-width="1.5" stroke-dasharray="5,4"/>
-      <text x="500" y="223" text-anchor="middle" font-size="11" fill="#5E6578" font-family="Tally,sans-serif">Avg $3,200</text>
-      <line x1="640" y1="96.0" x2="640" y2="208" stroke="#0A8A56" stroke-width="2"/>
-      <polygon points="640,86.0 634,100.0 646,100.0" fill="#0A8A56"/>
-      <circle cx="640" cy="96.0" r="5" fill="#0A8A56" stroke="#fff" stroke-width="2"/>
-      <text x="640" y="223" text-anchor="middle" font-size="12" fill="#0A8A56" font-weight="700" font-family="Tally,sans-serif">$5,100</text>
-    </svg>
-    <div class="dist-callout">
-      <div class="dist-callout-inner">
-        <div class="dist-callout-row">
-          <span class="dist-callout-label">Average</span>
-          <span class="dist-callout-value">$3,200</span>
-        </div>
-        <div class="dist-callout-row dist-callout-yours">
-          <span class="dist-callout-label">Your result</span>
-          <span class="dist-callout-value" style="color:#0A8A56">$5,100</span>
-        </div>
-        <div class="dist-callout-divider"></div>
-        <div class="dist-callout-row dist-callout-diff">
-          <span class="dist-callout-label">Difference</span>
-          <span class="dist-callout-value" style="color:#0A8A56">+$1,900</span>
-        </div>
-        <div class="dist-callout-note">Your refund is well above average</div>
-      </div>
+    <div class="bullet ai-hint-host">
+      <div class="bullet-dot green-dot"></div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <span>A bit more income taxed at 22% &mdash; the only trade-off of the raise (about <strong class="neg">&minus;$1,181</strong>), and easily offset with a small withholding tweak</span>
+    </div>
+    <div class="bullet ai-hint-host">
+      <div class="bullet-dot green-dot"></div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <span>Bottom line &mdash; a bigger paycheck and a solid <strong class="pos">$1,180 refund</strong>, just <strong class="pos">$270</strong> shy of last year despite earning $6,400 more</span>
     </div>
   </div>
-  <div class="dist-axis-label">Refund amount &rarr;</div>
 </div>
-
 
 <!-- 3. DATA CARD -->
 <div class="card data-card reveal">
   <div class="section-eyebrow">2025 at a glance</div>
   <div class="data-grid">
-    <div class="data-item ai-hint-host">
-      <div class="data-item-label">Year</div>
-      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="data-item-value">2025</div>
-      <div class="data-item-sub">was 2024</div>
-    </div>
     <div class="data-item ai-hint-host">
       <div class="data-item-label">Filing status</div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
@@ -1468,10 +1656,28 @@ body { background: #F4F4EF; }
       <div class="data-item-sub">same as 2024</div>
     </div>
     <div class="data-item ai-hint-host">
+      <div class="data-item-label">Deductions</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">$15,000</div>
+      <div class="data-item-sub">standard deduction</div>
+    </div>
+    <div class="data-item ai-hint-host">
       <div class="data-item-label">Withholding</div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
       <div class="data-item-value">$11,054</div>
       <div class="data-item-sub changed">+$911 from 2024</div>
+    </div>
+    <div class="data-item ai-hint-host">
+      <div class="data-item-label">Effective rate</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">11.9%</div>
+      <div class="data-item-sub">of taxable income</div>
+    </div>
+    <div class="data-item ai-hint-host">
+      <div class="data-item-label">Tax liability</div>
+      <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
+      <div class="data-item-value">$9,874</div>
+      <div class="data-item-sub">federal 2025</div>
     </div>
   </div>
   <div class="income-subsection-label">Income overview</div>
@@ -1481,28 +1687,28 @@ body { background: #F4F4EF; }
     <div class="bar-group ai-hint-host">
       <div class="bar-wrap">
         <div class="bar-col bar-gray animated" data-target="193" style="height:0">
-          <span>$76,600</span>
+          <div class="bar-inner">
+            <span>$76,600</span>
+            <div class="bar-label-sub">Total income</div>
+            <div class="bar-label-main">2024</div>
+          </div>
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Gross income</div>
-        <div class="year-main">2024</div>
-      </div>
     </div>
 
     <!-- Bar 2: Gross 2025 -->
     <div class="bar-group overlap ai-hint-host">
       <div class="bar-wrap">
         <div class="bar-col bar-dark-blue animated" data-target="210" style="height:0">
-          <span>$83,000</span>
+          <div class="bar-inner">
+            <span style="font-size:27px;">$83,000</span>
+            <div class="bar-label-sub">Total income</div>
+            <div class="bar-label-main">2025</div>
+          </div>
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Gross income</div>
-        <div class="year-main">2025</div>
-      </div>
     </div>
 
     <!-- Bar 3: Taxable 2025 stacked -->
@@ -1512,7 +1718,11 @@ body { background: #F4F4EF; }
         <div class="stacked-bar-outer animated" id="stackedBar" data-target="210" style="height:0">
           <div class="bar-deduction-cap"></div>
           <div class="bar-taxable-body">
-            <span>$68,000</span>
+            <div class="bar-inner">
+              <span style="font-size:20px;">$68,000</span>
+              <div class="bar-label-sub">Taxable income</div>
+              <div class="bar-label-main">2025</div>
+            </div>
           </div>
         </div>
         <!-- Callout sits outside the clipped container -->
@@ -1522,10 +1732,6 @@ body { background: #F4F4EF; }
         </div>
       </div>
       <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span>
-      <div class="bar-bottom-label">
-        <div class="year-sub">Taxable income</div>
-        <div class="year-main">2025</div>
-      </div>
     </div>
 
   </div>
@@ -1560,47 +1766,17 @@ body { background: #F4F4EF; }
 
   <div class="bd-row bd-row-ai-hint">
     <div class="bd-label">
-      <span class="bd-title">10% bracket portion</span>
-      <span class="bd-detail">First $11,925 of taxable income</span>
+      <span class="bd-title">Federal income tax</span>
+      <span class="bd-detail">10%&ndash;22% brackets on $68,000 taxable income</span>
     </div>
     <div class="bd-bar-area">
       <div class="bd-half bd-half-left">
-        <div class="bd-bar neg" data-px="21"><span class="bd-bar-label outside-left">&minus;$1,193</span></div>
+        <div class="bd-bar neg" data-px="100"><span class="bd-bar-label outside-left">&minus;$9,875</span></div>
       </div>
       <div class="bd-axis"></div>
       <div class="bd-half bd-half-right"></div>
     </div>
-  
-    <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span></div>
 
-  <div class="bd-row shaded bd-row-ai-hint">
-    <div class="bd-label">
-      <span class="bd-title">12% bracket portion</span>
-      <span class="bd-detail">$11,925 to $48,475 of taxable income</span>
-    </div>
-    <div class="bd-bar-area">
-      <div class="bd-half bd-half-left">
-        <div class="bd-bar neg" data-px="79"><span class="bd-bar-label outside-left">&minus;$4,386</span></div>
-      </div>
-      <div class="bd-axis"></div>
-      <div class="bd-half bd-half-right"></div>
-    </div>
-  
-    <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span></div>
-
-  <div class="bd-row bd-row-ai-hint">
-    <div class="bd-label">
-      <span class="bd-title">22% bracket portion (top)</span>
-      <span class="bd-detail">$48,475 to $68,000 of taxable income</span>
-    </div>
-    <div class="bd-bar-area">
-      <div class="bd-half bd-half-left">
-        <div class="bd-bar neg" data-px="77"><span class="bd-bar-label outside-left">&minus;$4,296</span></div>
-      </div>
-      <div class="bd-axis"></div>
-      <div class="bd-half bd-half-right"></div>
-    </div>
-  
     <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span></div>
 
   <div class="cat-header-row">
@@ -1691,17 +1867,17 @@ body { background: #F4F4EF; }
   <div class="bd-total-row">
     <div class="bd-label">
       <span class="outcome-title">2025 Outcome</span>
-      <div class="bd-total-row-mobile-amount" style="color:#0A8A56;">+$1,180 refund</div>
+      <div class="bd-total-row-mobile-amount" style="color:#0A8A56;">+$5,100 refund</div>
     </div>
     <div style="display:flex; align-items:center; justify-content:flex-end; padding-right:20px;">
-      <span class="outcome-amount">+$1,180 refund</span>
+      <span class="outcome-amount">+$5,100 refund</span>
     </div>
   </div>
 </div>
 
 </div>
 
-<div class="btn-bundle">
+<div class="btn-bundle btn-bundle-bottom">
   <a href="#" class="btn-back" onclick="return false;"><svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:5px"><path d="M7 1L1 7L7 13" stroke="#0077C5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
   <div class="btn-bundle-right">
     <a href="#" class="btn-secondary" onclick="return false;">Schedule review</a>
@@ -1744,8 +1920,11 @@ function animateBreakdownBars() {
   allBars.forEach((bar, i) => {
     const targetPx = parseInt(bar.dataset.px);
     const half = bar.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const finalPx = Math.max(Math.round(targetPx / maxPx * halfW), 6);
+    // Each bar occupies one half (50%) of the bar-area from the center axis.
+    // Reserve a margin so the largest bar fits fully and never overflows the
+    // card, then scale every bar proportionally to that same span.
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const finalPx = Math.max(Math.round(targetPx / maxPx * trackW), 6);
     const isPos = bar.classList.contains('pos');
     setTimeout(() => {
       bar.style.width = finalPx + 'px';
@@ -1792,8 +1971,8 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const _rmMax = Math.max(..._rmBars.map(b => parseInt(b.dataset.px)));
   _rmBars.forEach(b => {
     const half = b.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * halfW), 6);
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * trackW), 6);
     b.style.width = fp + 'px';
     const lbl = b.querySelector('.bd-bar-label');
     const isPos = b.classList.contains('pos');
@@ -1885,7 +2064,38 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
 
   </main>
+
+  <!-- AI chat panel -->
+  <aside class="ai-panel">
+    <div class="ai-resize-handle" aria-hidden="true"></div>
+    <div class="ai-panel-header">
+      <div class="ai-spark">✦</div>
+      <div>
+        <div class="ai-panel-title">Ask AI</div>
+        <div class="ai-panel-sub">About your 2025 return</div>
+      </div>
+      <button class="ai-panel-close" aria-label="Close panel">&times;</button>
+    </div>
+    <div class="ai-panel-body">
+      <div class="ai-msg bot">
+        <div class="ai-msg-bubble">Hi Carla! I can explain anything on your tax summary. What would you like to know?</div>
+      </div>
+      <div class="ai-suggestions">
+        <button class="ai-suggestion" onclick="return false;">Why did my refund go down $270?</button>
+        <button class="ai-suggestion" onclick="return false;">How was my standard deduction calculated?</button>
+        <button class="ai-suggestion" onclick="return false;">What is my effective tax rate?</button>
+      </div>
+    </div>
+    <div class="ai-panel-input">
+      <textarea rows="1" placeholder="Ask a question…"></textarea>
+      <button class="ai-panel-send" aria-label="Send" onclick="return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12L20 4L13 20L11 13L4 12Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </aside>
 </div>
+
+<button class="ai-reopen" aria-label="Open AI panel"><span>✦</span> Ask AI</button>
 
 
 
@@ -1924,8 +2134,11 @@ function animateBreakdownBars() {
   allBars.forEach((bar, i) => {
     const targetPx = parseInt(bar.dataset.px);
     const half = bar.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const finalPx = Math.max(Math.round(targetPx / maxPx * halfW), 6);
+    // Each bar occupies one half (50%) of the bar-area from the center axis.
+    // Reserve a margin so the largest bar fits fully and never overflows the
+    // card, then scale every bar proportionally to that same span.
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const finalPx = Math.max(Math.round(targetPx / maxPx * trackW), 6);
     const isPos = bar.classList.contains('pos');
     setTimeout(() => {
       bar.style.width = finalPx + 'px';
@@ -1972,8 +2185,8 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const _rmMax = Math.max(..._rmBars.map(b => parseInt(b.dataset.px)));
   _rmBars.forEach(b => {
     const half = b.closest('.bd-bar-area');
-    const halfW = half ? half.offsetWidth - 4 : 196;
-    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * halfW), 6);
+    const trackW = half ? (half.offsetWidth / 2) - 12 : 196;
+    const fp = Math.max(Math.round(parseInt(b.dataset.px) / _rmMax * trackW), 6);
     b.style.width = fp + 'px';
     const lbl = b.querySelector('.bd-bar-label');
     const isPos = b.classList.contains('pos');
@@ -2050,7 +2263,175 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
   // Cards start open — nothing to do
 })();
+</script>
 
+<!-- AI panel controls kept in a SEPARATE script so an error above can't block them -->
+<script>
+// ── AI panel: open/close + horizontal resize ──
+(function() {
+  const panel = document.querySelector('.ai-panel');
+  if (!panel) { console.warn('[ai-panel] .ai-panel not found'); return; }
+  const handle = panel.querySelector('.ai-resize-handle');
+  const closeBtn = panel.querySelector('.ai-panel-close');
+  const reopenBtn = document.querySelector('.ai-reopen');
+  const root = document.documentElement;
+
+  const MIN = 280, MAX = 640;
+  const setWidth = px => {
+    px = Math.round(px);
+    root.style.setProperty('--ai-w', px + 'px');   // drives .tt-main margin
+    panel.style.width = px + 'px';                  // and the panel directly
+  };
+
+  // Open / close
+  if (closeBtn) closeBtn.addEventListener('click', () => document.body.classList.add('ai-closed'));
+  if (reopenBtn) reopenBtn.addEventListener('click', () => document.body.classList.remove('ai-closed'));
+
+  // Drag to resize — Pointer Events + pointer capture so the drag never gets
+  // "lost" when the cursor moves faster than the 11px handle.
+  let dragging = false;
+  const onMove = e => {
+    if (!dragging) return;
+    let w = window.innerWidth - e.clientX;   // distance from right edge
+    setWidth(Math.max(MIN, Math.min(MAX, w)));
+  };
+  const stop = e => {
+    if (!dragging) return;
+    dragging = false;
+    panel.classList.remove('resizing');
+    document.body.style.userSelect = '';
+    try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
+  };
+  const start = e => {
+    dragging = true;
+    panel.classList.add('resizing');
+    document.body.style.userSelect = 'none';
+    try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  };
+  if (handle) {
+    handle.addEventListener('pointerdown', start);
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', stop);
+    handle.addEventListener('pointercancel', stop);
+    console.log('[ai-panel] resize handle wired');
+  } else {
+    console.warn('[ai-panel] .ai-resize-handle not found');
+  }
+
+  // ── "Ask AI" on a metric → open panel, add reference + explanation ──
+  const body = panel.querySelector('.ai-panel-body');
+  const input = panel.querySelector('.ai-panel-input textarea');
+  const suggestions = panel.querySelector('.ai-suggestions');
+
+  // Read a { label, value } from whatever host wraps the clicked chip.
+  const readMetric = host => {
+    const pick = sels => { for (const s of sels) { const el = host.querySelector(s); if (el) return el.textContent.trim(); } return ''; };
+    let label = pick(['.data-item-label', '.kpi-label', '.stat-label', '.bd-title', '.year-sub']);
+    let value = pick(['.data-item-value', '.kpi-value', '.stat-value', '.bd-bar-label', '.bar-col span']);
+    // Bar groups: label is "<year-sub> <year-main>", value is the bar amount
+    const yearMain = host.querySelector('.year-main');
+    if (yearMain && label) label = label + ' ' + yearMain.textContent.trim();
+    return { label: label || 'this figure', value };
+  };
+
+  // Metric-specific explanations (keyed by lowercased label); fallback is generic.
+  const EXPLANATIONS = {
+    'total income': 'Your total income of $83,000 is everything you earned in 2025 before any deductions — mostly W-2 wages. It rose from $76,600 in 2024, a $6,400 raise.',
+    'taxable income': 'Taxable income is $68,000 — your $83,000 total income minus the $15,000 standard deduction. This is the amount your tax brackets actually apply to.',
+    'effective rate': 'Your effective rate is 11.9% — total federal tax ($9,874) divided by taxable income ($68,000). It’s lower than your 22% top bracket because only the last slice of income is taxed at 22%.',
+    'tax liability': 'Your federal tax liability is $9,874 — the total tax owed across the 10%, 12%, and 22% brackets on your $68,000 taxable income, before withholding is applied.',
+    'top bracket': 'Your top bracket is 22% — the rate on your last dollar of taxable income. Only income above $48,475 is taxed at this rate, not your whole income.',
+    'refund change': 'Your refund is $270 smaller than last year. Your raise pushed a bit more income into the 22% bracket, and withholding didn’t rise quite as fast as your pay.',
+    'deductions': 'You’re taking the $15,000 standard deduction. Your expert checked itemizing and the standard deduction won by about $1,800, so it’s the better choice for you.',
+    'withholding': 'Your employer withheld $11,054 in federal tax during 2025 — $911 more than last year. Since this exceeds your $9,874 liability, the difference comes back as your refund.',
+    'filing status': 'You’re filing as Single, same as 2024. This sets your standard deduction ($15,000) and bracket thresholds.',
+    'dependents': 'You claimed 0 dependents, same as 2024. Dependents can unlock credits like the Child Tax Credit — none apply this year.',
+    'tax credits': 'You have no tax credits this year. Credits reduce tax dollar-for-dollar; none of the common ones (child, education, energy) apply to your situation.',
+    'federal income tax': 'This is the $9,875 of federal income tax across your brackets: 10% on the first $11,925, 12% up to $48,475, and 22% on the rest up to $68,000.',
+    'standard deduction benefit': 'The standard deduction shields $15,000 of income from tax. At your 22% marginal rate that’s worth about $3,300 in tax savings.',
+    'total income 2024': 'In 2024 your total income was $76,600. It grew to $83,000 in 2025 — a $6,400 increase.',
+    'total income 2025': 'Your 2025 total income is $83,000, up $6,400 from 2024’s $76,600.',
+    'taxable income 2025': 'Your 2025 taxable income is $68,000 — total income minus the $15,000 standard deduction.'
+  };
+
+  const addMsg = (cls, html) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ' + cls;
+    const bub = document.createElement('div');
+    bub.className = 'ai-msg-bubble';
+    bub.innerHTML = html;
+    wrap.appendChild(bub);
+    body.appendChild(wrap);
+    return wrap;
+  };
+
+  const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+  const askAboutMetric = host => {
+    const { label, value } = readMetric(host);
+    // Open the panel if closed
+    document.body.classList.remove('ai-closed');
+    // Hide the starter suggestions once a real conversation begins
+    if (suggestions) suggestions.style.display = 'none';
+
+    // Reference chip (what the user "clicked")
+    const ref = document.createElement('div');
+    ref.className = 'ai-ref-chip';
+    ref.innerHTML = '<span class="ai-ref-spark">✦</span>' +
+      '<span class="ai-ref-label">' + escapeHtml(label) + '</span>' +
+      (value ? '<span class="ai-ref-value">' + escapeHtml(value) + '</span>' : '');
+    body.appendChild(ref);
+
+    // Explanation
+    const key = label.toLowerCase();
+    const explanation = EXPLANATIONS[key] ||
+      ('Here’s a look at ' + escapeHtml(label) + (value ? ' (' + escapeHtml(value) + ')' : '') +
+       '. It’s one of the figures on your 2025 return — ask me anything about how it was calculated or how to change it.');
+    addMsg('bot', explanation);
+
+    // Seed the input so they can keep the thread going
+    if (input) {
+      input.value = 'Tell me more about ' + label + (value ? ' (' + value + ')' : '') + '…';
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    body.scrollTop = body.scrollHeight;
+  };
+
+  document.querySelectorAll('.ai-hint-chip').forEach(chip => {
+    chip.style.cursor = 'pointer';
+    chip.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const host = chip.closest('.ai-hint-host') || chip.parentElement;
+      askAboutMetric(host);
+    });
+  });
+})();
+
+</script>
+
+<!-- One-time Lottie confetti inside the green refund card -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<script>
+(function() {
+  const container = document.querySelector('.outcome-confetti');
+  if (!container || !window.lottie) return;
+  const anim = window.lottie.loadAnimation({
+    container: container,
+    renderer: 'svg',
+    loop: false,        // play once
+    autoplay: true,
+    path: 'confetti.json',
+    rendererSettings: {
+      // Scale to the container (full card width) preserving aspect ratio
+      preserveAspectRatio: 'xMidYMid meet'
+    }
+  });
+  // Belt-and-suspenders: never replay once complete.
+  anim.addEventListener('complete', () => anim.pause());
+})();
 </script>
 </body>
 </html>
