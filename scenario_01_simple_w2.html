@@ -204,25 +204,31 @@ body {
   pointer-events: none;
   z-index: 3;
 }
-.outcome-card > .outcome-coin,
 .outcome-card > .outcome-caption,
+.outcome-card > .outcome-guarantee-row,
 .outcome-card > .refund-amount { position: relative; z-index: 1; }
-.outcome-coin {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--green);
-  color: #fff;
-  font-family: 'Tally', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0 auto 20px;
+.outcome-guarantee-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
 }
+.outcome-badge {
+  width: 83px;
+  height: 83px;
+  display: block;
+  flex-shrink: 0;
+}
+.outcome-guarantee {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-600);
+  line-height: 1.4;
+}
+.outcome-guarantee a { color: #0077C5; text-decoration: underline; font-weight: 600; }
 .outcome-caption {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 12px;
@@ -265,12 +271,12 @@ body {
 
 /* ── NARRATIVE ── */
 .narrative-card { padding: 22px 28px 22px; }
-.narrative-text { font-size: 18px; line-height: 1.78; color: var(--text); margin-bottom: 20px; }
+.narrative-text { font-size: 18px; font-weight: 500; line-height: 1.51; color: var(--text); margin-bottom: 20px; }
 .changes-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
 .changes-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-600); white-space: nowrap; }
 .changes-line { flex: 1; height: 1px; background: var(--gray-200); }
-.bullets { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-.bullet { display: flex; align-items: baseline; gap: 10px; font-size: 13px; color: var(--text); line-height: 1.5; }
+.bullets { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding-left: 20px; padding-top: 20px; }
+.bullet { display: flex; align-items: baseline; gap: 10px; font-size: 18px; color: var(--text); line-height: 1.5; }
 .bullet-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; margin-top: 5px; }
 .bullet-dot.red-dot { background: var(--red); }
 .bullet-dot.green-dot { background: var(--green); }
@@ -481,6 +487,7 @@ body {
 }
 .bd-total-row .bd-label { padding-left: 0; flex-shrink: 0; }
 .outcome-title { font-size: 18px; font-weight: 700; color: #0A8A56; display: block; padding-left: 14px; }
+.bd-total-badge { width: 48px; height: 48px; flex-shrink: 0; }
 
 
 .outcome-amount {
@@ -836,7 +843,8 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   background: #fff;
 }
 .expert-msg-quote {
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 500;
   color: #1A1A1A;
   line-height: 1.6;
   margin-top: 16px;
@@ -874,7 +882,7 @@ a.expert-msg-send-link:hover { text-decoration: underline; }
   align-items: center;
   gap: 4px;
 }
-.expert-star { color: #1A1A1A; font-size: 13px; }
+.expert-stars { color: #F5B800; font-size: 13px; letter-spacing: 1px; }
 
 
 /* ── AI hint row — standard deduction ── */
@@ -1370,9 +1378,10 @@ body.ai-closed .ai-reopen { display: flex; }
   margin-left: auto;
   width: 28px; height: 28px;
   border-radius: 50%;
-  border: none;
-  background: var(--gray-100);
-  color: var(--gray-600);
+  border: 1px solid var(--green-mid);
+  background: linear-gradient(155deg, #EAFBF2 0%, var(--green-light) 40%, #B8E8D4 100%);
+  box-shadow: 0 2px 6px rgba(15,169,106,0.10), 0 12px 32px rgba(15,169,106,0.16);
+  color: var(--green-dark);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px;
@@ -1485,11 +1494,101 @@ body.ai-closed .ai-reopen { display: flex; }
 
 /* ── Mobile ── */
 @media (max-width: 640px) {
-  .tt-sidebar { display: none; }
-  .tt-main { margin-left: 0; margin-right: 0; padding: 20px 16px 56px; }
+  .tt-main { margin-left: 0; margin-right: 0; padding: 20px 16px 96px; }
   .page-title-row, .page { max-width: 100%; }
   .ai-panel { display: none; }
+  /* Ask AI FAB always visible on mobile (panel is hidden there) */
+  .ai-reopen { display: flex !important; }
+
+  /* Off-canvas sidebar toggled by the hamburger */
+  .tt-sidebar {
+    position: fixed;
+    top: 58px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    z-index: 120;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+    box-shadow: 2px 0 16px rgba(0,0,0,0.12);
+  }
+  body.nav-open .tt-sidebar { transform: translateX(0); }
+  .nav-hamburger { display: inline-flex; }
+  .nav-scrim {
+    position: fixed;
+    inset: 58px 0 0 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 110;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
 }
+
+/* ── Coverage card (animated point reveal) ── */
+.coverage-card { padding: 24px 28px 20px; }
+.coverage-list { display: flex; flex-direction: column; gap: 18px; margin-top: 4px; }
+.coverage-item {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  align-items: start;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1);
+}
+.coverage-item.in { opacity: 1; transform: translateY(0); }
+.coverage-item > div { min-width: 0; }
+.coverage-title { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1.3; letter-spacing: -0.01em; }
+.coverage-desc { font-size: 13.5px; font-weight: 400; color: var(--gray-600); line-height: 1.55; margin-top: 3px; }
+.coverage-check {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.coverage-item.checked .coverage-check { opacity: 1; transform: scale(1); }
+.coverage-check svg { width: 15px; height: 15px; }
+
+/* ── Coverage scrollable duplicate (title fixed, list scrolls) ── */
+.cov-scrolluser { overflow: hidden; }
+.cov-scrolluser .coverage-list {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 28px;
+}
+.cov-scrolluser .coverage-item { grid-template-columns: 20px 1fr; }
+.cov-scrolluser .coverage-title { font-size: 14px; }
+.cov-scrolluser .coverage-check { width: 20px; height: 20px; margin-top: 1px; }
+.cov-scrolluser .coverage-check svg { width: 12px; height: 12px; }
+@media (max-width: 640px) { .cov-scrolluser .coverage-list { grid-template-columns: 1fr; } }
+
+
+
+
+
+/* Hamburger button — hidden on desktop, shown on mobile via the query above */
+.nav-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #1A1A1A;
+  flex-shrink: 0;
+}
+.nav-hamburger:hover { background: var(--gray-100); }
 
 </style>
 </head>
@@ -1498,6 +1597,9 @@ body.ai-closed .ai-reopen { display: flex; }
 <!-- Top navigation -->
 <nav class="tt-nav">
   <div class="tt-nav-left">
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <a class="tt-logo" href="index.html" aria-label="TurboTax Full Service — back to home">
       <div class="tt-logo-stack">
       <svg width="168" height="28" viewBox="0 0 168 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1550,6 +1652,8 @@ body.ai-closed .ai-reopen { display: flex; }
       <a href="#">Sign out</a>
     </div>
   </nav>
+  <!-- Scrim behind the mobile off-canvas sidebar -->
+  <div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
 
   <!-- Main scrollable area -->
   <main class="tt-main">
@@ -1561,9 +1665,12 @@ body.ai-closed .ai-reopen { display: flex; }
   <h1 class="outcome-headline">Ka-ching! Your refund&rsquo;s looking good, Carla.</h1>
   <div class="card outcome-card">
     <div class="outcome-confetti" aria-hidden="true"></div>
-    <div class="outcome-coin">$</div>
-    <div class="outcome-caption">You&rsquo;re getting a total refund of</div>
+    <div class="outcome-caption">You&rsquo;re getting a refund of</div>
     <div class="refund-amount">$1,180</div>
+    <div class="outcome-guarantee-row">
+      <div class="outcome-guarantee">100% accuracy, and your max refund&mdash;<a href="https://turbotax.intuit.com/corp/guarantees/" target="_blank" rel="noopener">guaranteed</a>.</div>
+      <img class="outcome-badge" src="max-refund-badge.svg?v=1" alt="Maximum refund guaranteed" />
+    </div>
   </div>
 </div>
 
@@ -1574,6 +1681,41 @@ body.ai-closed .ai-reopen { display: flex; }
     <a href="#" class="btn-primary" onclick="return false;">Continue</a>
   </div>
 </div>
+
+<!-- Coverage card (animated) -->
+<div class="card coverage-card reveal" style="display:none;">
+  <div class="section-eyebrow">What we checked</div>
+  <div class="coverage-list" id="coverageList">
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Overall coverage</div><div class="coverage-desc">Search of 350+ deductions and credits to find every tax break the filer qualifies for, backed by the maximum refund guarantee.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Homeowner</div><div class="coverage-desc">Mortgage interest and property tax deductions, plus guidance on expenses tied to selling a home.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Family and dependents</div><div class="coverage-desc">Child Tax Credit, Child and Dependent Care Credit, Earned Income Tax Credit (EIC), and help determining who qualifies as a dependent.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Education</div><div class="coverage-desc">Education credits and deductions for college, trade school, or work related classes, including 1098-T tuition and books expenses.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Charitable giving</div><div class="coverage-desc">Tracking and valuing donations, including cash, mileage, and stock gifts, not just goods.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Life changes</div><div class="coverage-desc">Guidance on how a new job, a new child, or a home purchase affects the return, and which new deductions apply.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Self employed and gig work</div><div class="coverage-desc">Business or 1099-NEC income support, with expense tracking that finds more deductions than manual entry.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Investment income</div><div class="coverage-desc">Interest, dividends, and original issue discounts (1099-INT/1099-DIV/1099-OID).</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Itemized deductions (Schedule A)</div><div class="coverage-desc">Charitable contributions, medical expenses, mortgage interest, and state and local tax deductions.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Accuracy check</div><div class="coverage-desc">CompleteCheck scans the full return before filing, paired with the 100% Accurate Calculations Guarantee (Intuit pays penalties and interest from a TurboTax calculation error).</div></div></div>
+  </div>
+</div>
+
+
+<!-- Coverage card: scrollable duplicate (300px) -->
+<div class="card coverage-card cov-scrolluser reveal">
+  <div class="section-eyebrow">350+ deductions and credits checked</div>
+  <div class="coverage-list" id="coverageListScroll">
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Homeowner</div><div class="coverage-desc">Mortgage interest and property tax deductions, plus guidance on expenses tied to selling a home.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Family and dependents</div><div class="coverage-desc">Child Tax Credit, Child and Dependent Care Credit, Earned Income Tax Credit (EIC), and help determining who qualifies as a dependent.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Education</div><div class="coverage-desc">Education credits and deductions for college, trade school, or work related classes, including 1098-T tuition and books expenses.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Charitable giving</div><div class="coverage-desc">Tracking and valuing donations, including cash, mileage, and stock gifts, not just goods.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Life changes</div><div class="coverage-desc">Guidance on how a new job, a new child, or a home purchase affects the return, and which new deductions apply.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Self employed and gig work</div><div class="coverage-desc">Business or 1099-NEC income support, with expense tracking that finds more deductions than manual entry.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Investment income</div><div class="coverage-desc">Interest, dividends, and original issue discounts (1099-INT/1099-DIV/1099-OID).</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Itemized deductions (Schedule A)</div><div class="coverage-desc">Charitable contributions, medical expenses, mortgage interest, and state and local tax deductions.</div></div></div>
+    <div class="coverage-item"><span class="coverage-check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="coverage-title">Accuracy check</div><div class="coverage-desc">CompleteCheck scans the full return before filing, paired with the 100% Accurate Calculations Guarantee (Intuit pays penalties and interest from a TurboTax calculation error).</div></div></div>
+  </div>
+</div>
+
 
     <!-- Expert message card -->
     <div class="expert-msg-card">
@@ -1586,7 +1728,7 @@ body.ai-closed .ai-reopen { display: flex; }
           <div style="flex:1">
             <span class="expert-msg-name">Ben P.</span>
             <div class="expert-msg-meta">
-              <span class="expert-star">&#9733;</span>
+              <span class="expert-stars" aria-label="4.9 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
               <span>4.9 (372) &middot; 13 yrs experience</span>
             </div>
           </div>
@@ -1865,9 +2007,13 @@ body.ai-closed .ai-reopen { display: flex; }
     <span class="ai-hint-chip"><span class="sparkle-icon">✦</span> Ask AI</span></div>
 
   <div class="bd-total-row">
-    <div class="bd-label">
-      <span class="outcome-title">2025 Outcome</span>
-      <div class="bd-total-row-mobile-amount" style="color:#0A8A56;">+$1,180 refund</div>
+    <div class="bd-label" style="display:flex; align-items:center; gap:14px;">
+      <img class="bd-total-badge" src="max-refund-badge.svg?v=1" alt="Maximum refund guaranteed" />
+      <div>
+        <span class="outcome-title" style="padding-left:0;">2025 Outcome</span>
+        <div class="bd-total-row-mobile-amount" style="color:#0A8A56;">+$1,180 refund</div>
+        <div class="outcome-guarantee" style="margin-top:4px;">100% accuracy, and your max refund&mdash;<a href="https://turbotax.intuit.com/corp/guarantees/" target="_blank" rel="noopener">guaranteed</a>.</div>
+      </div>
     </div>
     <div style="display:flex; align-items:center; justify-content:flex-end; padding-right:20px;">
       <span class="outcome-amount">+$1,180 refund</span>
@@ -1884,6 +2030,7 @@ body.ai-closed .ai-reopen { display: flex; }
     <a href="#" class="btn-primary" onclick="return false;">Continue</a>
   </div>
 </div>
+
 
 <script>
 const reveals = document.querySelectorAll('.reveal');
@@ -2431,6 +2578,80 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   });
   // Belt-and-suspenders: never replay once complete.
   anim.addEventListener('complete', () => anim.pause());
+})();
+</script>
+
+
+<!-- Mobile nav (hamburger) + sticky-CTA behavior -->
+<script>
+(function() {
+  // ── Hamburger toggles the off-canvas sidebar ──
+  const burger = document.getElementById('navHamburger');
+  const scrim = document.getElementById('navScrim');
+  const openNav = () => { document.body.classList.add('nav-open'); burger && burger.setAttribute('aria-expanded', 'true'); };
+  const closeNav = () => { document.body.classList.remove('nav-open'); burger && burger.setAttribute('aria-expanded', 'false'); };
+  if (burger) burger.addEventListener('click', () => {
+    document.body.classList.contains('nav-open') ? closeNav() : openNav();
+  });
+  if (scrim) scrim.addEventListener('click', closeNav);
+  // Close the drawer when a sidebar link is tapped
+  document.querySelectorAll('.tt-sidebar a').forEach(a => a.addEventListener('click', closeNav));
+})();
+</script>
+
+<!-- Coverage card staggered reveal (~8s total) -->
+<script>
+(function() {
+  const list = document.getElementById('coverageList');
+  if (!list) return;
+  const items = Array.from(list.querySelectorAll('.coverage-item'));
+  if (!items.length) return;
+  // Spread point reveals across ~8s; each check lands shortly after its point.
+  const TOTAL = 8000, CHECK_DELAY = 320;
+  const step = (TOTAL - CHECK_DELAY) / items.length;
+  const run = () => {
+    items.forEach((item, i) => {
+      const t = Math.round(i * step);
+      setTimeout(() => item.classList.add('in'), t);
+      setTimeout(() => item.classList.add('checked'), t + CHECK_DELAY);
+    });
+  };
+  // Kick off when the card scrolls into view (once).
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => { if (e.isIntersecting) { run(); obs.disconnect(); } });
+    }, { threshold: 0.15 });
+    io.observe(list);
+  } else {
+    run();
+  }
+})();
+</script>
+
+
+
+<!-- Coverage scrollable duplicate: staggered reveal + auto-follow scroll -->
+<script>
+(function() {
+  const card = document.querySelector('.cov-scrolluser');
+  if (!card) return;
+  const list = card.querySelector('#coverageListScroll');
+  if (!list) return;
+  const items = Array.from(list.querySelectorAll('.coverage-item'));
+  if (!items.length) return;
+  const TOTAL = 4200, CHECK_DELAY = 300;
+  const step = (TOTAL - CHECK_DELAY) / items.length;
+  const run = () => items.forEach((item, i) => {
+    const t = Math.round(i * step);
+    setTimeout(() => item.classList.add('in'), t);
+    setTimeout(() => item.classList.add('checked'), t + CHECK_DELAY);
+  });
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => { if (e.isIntersecting) { run(); obs.disconnect(); } });
+    }, { threshold: 0.15 });
+    io.observe(card);
+  } else { run(); }
 })();
 </script>
 </body>
