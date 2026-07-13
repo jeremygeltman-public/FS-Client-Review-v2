@@ -103,6 +103,25 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
   gap: 16px;
 }
+.grid-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0 8px;
+  color: #8A8F99;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.grid-divider::before,
+.grid-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #E2E5EA;
+}
 
 /* ── Card ── */
 .card {
@@ -296,6 +315,31 @@ body {
       </div>
       <div class="card-arrow">&#8594;</div>
     </a>
+    <a class="card" href="scenario_04_capital_gains.html">
+      <div class="card-num">S04</div>
+      <div class="card-body">
+        <div class="card-top">
+          <h2 class="card-title">Capital Gains</h2>
+          <span class="card-tag" style="background:#E6F0FB; color:#1A4A80">Confidence: High</span>
+        </div>
+        <div class="card-meta">
+          <span class="card-user">Sam & Dana</span>
+          <span class="card-dot">·</span>
+          <span class="card-filing">Married Filing Jointly</span>
+        </div>
+        <p class="card-desc">Sold appreciated stock. Long-term gains jumped from $5K to $60K. Tax on gains not withheld from paycheck.</p>
+        <div class="card-footer">
+          <span class="card-outcome" style="color:#D03E3E">-$3,800 owed</span>
+          <span class="card-change" style="color:#D03E3E">-$5,900 from 2024</span>
+        </div>
+      </div>
+      <div class="card-arrow">&#8594;</div>
+    </a>
+
+    <div class="grid-divider">
+      <span>More scenarios</span>
+    </div>
+
     <a class="card" href="scenario_02_new_dependent.html">
       <div class="card-num">S02</div>
       <div class="card-body">
@@ -332,26 +376,6 @@ body {
         <div class="card-footer">
           <span class="card-outcome" style="color:#D03E3E">-$2,400 owed</span>
           <span class="card-change" style="color:#D03E3E">-$3,300 from 2024</span>
-        </div>
-      </div>
-      <div class="card-arrow">&#8594;</div>
-    </a>
-    <a class="card" href="scenario_04_capital_gains.html">
-      <div class="card-num">S04</div>
-      <div class="card-body">
-        <div class="card-top">
-          <h2 class="card-title">Capital Gains</h2>
-          <span class="card-tag" style="background:#E6F0FB; color:#1A4A80">Confidence: High</span>
-        </div>
-        <div class="card-meta">
-          <span class="card-user">Sam & Dana</span>
-          <span class="card-dot">·</span>
-          <span class="card-filing">Married Filing Jointly</span>
-        </div>
-        <p class="card-desc">Sold appreciated stock. Long-term gains jumped from $5K to $60K. Tax on gains not withheld from paycheck.</p>
-        <div class="card-footer">
-          <span class="card-outcome" style="color:#D03E3E">-$3,800 owed</span>
-          <span class="card-change" style="color:#D03E3E">-$5,900 from 2024</span>
         </div>
       </div>
       <div class="card-arrow">&#8594;</div>
@@ -416,6 +440,7 @@ body {
       </div>
       <div class="card-arrow">&#8594;</div>
     </a>
+
 </div>
 
 <div class="footer">
